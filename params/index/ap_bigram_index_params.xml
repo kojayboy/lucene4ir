@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <indexParams>
-    <indexName>apIndex</indexName>
+    <indexName>apBigramIndex</indexName>
     <fileList>/Users/colin/Workspace/collections/ap/ap.list</fileList>
     <indexType>trecnews</indexType>
-    <tokenFilterFile>params/index/example_02.xml</tokenFilterFile>
+    <tokenFilterFile>params/index/shingle_tokeniser.xml</tokenFilterFile>
 </indexParams>

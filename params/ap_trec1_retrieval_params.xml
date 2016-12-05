@@ -5,4 +5,5 @@
     <maxResults>1000</maxResults>
     <model>bm25</model>
     <resultFile>data/trec123/bm25_trec1_ap.res</resultFile>
+    <tokenFilterFile>params/index/shingle_tokeniser.xml</tokenFilterFile>
 </retrievalParams>

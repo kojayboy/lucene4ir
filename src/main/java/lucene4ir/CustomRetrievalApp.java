@@ -1,5 +1,6 @@
 package lucene4ir;
 
+import lucene4ir.utils.TokenizerUtil;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -21,13 +22,17 @@ import lucene4ir.similarity.BM25Similarity;
 
 import javax.xml.bind.JAXB;
 import java.io.*;
+import java.util.List;
 
 /**
  * Created by leif on 22/08/2016.
+ * Edited by Kojayboy 11/11/2016.
+ * Created to offer an alternative retrieval app which can
+ * tokenise the query terms if given a path to tokenfile
  */
-public class RetrievalApp {
+public class CustomRetrievalApp {
 
-    public RetrievalParams p;
+    public CustomRetrievalParams p;
 
     private Similarity simfn;
     private IndexReader reader;
@@ -38,7 +43,7 @@ public class RetrievalApp {
 
     private enum SimModel {
         DEF, BM25, BM25L, LMD, LMJ, PL2, TFIDF,
-	OKAPIBM25, SMARTBNNBNN
+        OKAPIBM25, SMARTBNNBNN
     }
 
     private SimModel sim;
@@ -115,7 +120,7 @@ public class RetrievalApp {
 
 
         try {
-            p = JAXB.unmarshal(new File(paramFile), RetrievalParams.class);
+            p = JAXB.unmarshal(new File(paramFile), CustomRetrievalParams.class);
         } catch (Exception e){
             System.out.println(" caught a " + e.getClass() +
                     "\n with message: " + e.getMessage());
@@ -143,12 +148,16 @@ public class RetrievalApp {
             p.resultFile = p.runTag+"_results.res";
         }
 
+        if (p.tokenFilterFile==null){
+            p.tokenFilterFile = "";
+        }
         System.out.println("Path to index: " + p.indexName);
         System.out.println("Query File: " + p.queryFile);
         System.out.println("Result File: " + p.resultFile);
         System.out.println("Model: " + p.model);
         System.out.println("Max Results: " + p.maxResults);
         System.out.println("b: " + p.b);
+        System.out.println("TokenFile: " + p.tokenFilterFile);
 
 
     }
@@ -169,6 +178,8 @@ public class RetrievalApp {
 
             try {
                 String line = br.readLine();
+                TokenizerUtil tku = new TokenizerUtil(p.tokenFilterFile);
+                System.out.println("Analyser created");
                 while (line != null){
 
                     String[] parts = line.split(" ");
@@ -179,17 +190,21 @@ public class RetrievalApp {
                     /*
                     Parse the query File here using the same tokenisers as indexing
                      */
-                    ScoreDoc[] scored = runQuery(qno, queryTerms);
+                    List<String> tokens = tku.tokenizeString(tku.getAnalyzer(), queryTerms);
+                    System.out.println(tokens);
+                    for (int j = 0; j<tokens.size(); j++) {
+                        String newqno = qno +"."+j;
+                        ScoreDoc[] scored = runQuery(newqno, tokens.get(j));
 
-                    int n = Math.min(p.maxResults, scored.length);
+                        int n = Math.min(p.maxResults, scored.length);
 
-                    for(int i=0; i<n; i++){
-                        Document doc = searcher.doc(scored[i].doc);
-                        String docno = doc.get("docnum");
-                        fw.write(qno + " QO " + docno + " " + (i+1) + " " + scored[i].score + " " + p.runTag);
-                        fw.write(System.lineSeparator());
+                        for (int i = 0; i < n; i++) {
+                            Document doc = searcher.doc(scored[i].doc);
+                            String docno = doc.get("docnum");
+                            fw.write(qno + " QO " + docno + " " + (i + 1) + " " + scored[i].score + " " + p.runTag);
+                            fw.write(System.lineSeparator());
+                        }
                     }
-
                     line = br.readLine();
                 }
 
@@ -226,7 +241,7 @@ public class RetrievalApp {
         return hits;
     }
 
-    public RetrievalApp(String retrievalParamFile){
+    public CustomRetrievalApp(String retrievalParamFile){
         System.out.println("Retrieval App");
         readParamsFromFile(retrievalParamFile);
         try {
@@ -260,7 +275,7 @@ public class RetrievalApp {
             System.exit(1);
         }
 
-        RetrievalApp retriever = new RetrievalApp(retrievalParamFile);
+        CustomRetrievalApp retriever = new CustomRetrievalApp(retrievalParamFile);
         retriever.processQueryFile();
 
     }
@@ -269,7 +284,7 @@ public class RetrievalApp {
 
 
 
-class RetrievalParams {
+class CustomRetrievalParams {
     public String indexName;
     public String queryFile;
     public String resultFile;
