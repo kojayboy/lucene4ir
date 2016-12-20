@@ -3,6 +3,7 @@ package lucene4ir;
 import javax.xml.bind.JAXB;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import java.util.HashSet;
@@ -115,10 +116,17 @@ public class ExampleStatsApp {
 
         TermsEnum te = terms.iterator();
         BytesRef term;
+        int i = 1;
+        String output="";
         while ((term = te.next()) != null) {
             System.out.println(term.utf8ToString() + " DF: " + te.docFreq() + " CF: " + te.totalTermFreq());
+            if (term.utf8ToString().split(" ").length > 1) {
+                output = output + i + " " + term.utf8ToString() + "\n";
+                i++;
+            }
 
         }
+        Files.write(Paths.get("/Users/colin/Workspace/lucene4ir/data/ap_bigrams.qry"), output.getBytes());
 
     }
 
