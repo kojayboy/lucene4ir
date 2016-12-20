@@ -3,5 +3,5 @@
     <indexName>apIndex</indexName>
     <fileList>/Users/colin/Workspace/collections/ap/ap.list</fileList>
     <indexType>trecnews</indexType>
-    <tokenFilterFile>params/index/example_02.xml</tokenFilterFile>
+    <tokenFilterFile>params/index/example_03.xml</tokenFilterFile>
 </indexParams>
