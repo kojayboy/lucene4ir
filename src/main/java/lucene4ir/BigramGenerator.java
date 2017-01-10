@@ -1,9 +1,6 @@
 package lucene4ir;
 
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.*;
-import org.apache.lucene.index.memory.MemoryIndex;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.BytesRef;
 
@@ -12,8 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Set;
 
 
 /**
@@ -24,6 +19,7 @@ public class BigramGenerator {
 
     public String indexName;
     public IndexReader reader;
+    public String outputPath;
 
     public BigramGenerator() {
         System.out.println("BigramGenerator");
@@ -34,6 +30,7 @@ public class BigramGenerator {
     Assumes index has a docnum (i.e. trec doc id), title and content fields.
      */
         indexName = "";
+        outputPath = "/Users/kojayboy/Workspace/lucene4ir/data/ap_bigrams2.qry";
         reader = null;
 
     }
@@ -43,6 +40,7 @@ public class BigramGenerator {
         try {
             IndexParams p = JAXB.unmarshal(new File(indexParamFile), IndexParams.class);
             indexName = p.indexName;
+            //add in outputPath read.
 
         } catch (Exception e) {
             System.out.println(" caught a " + e.getClass() +
@@ -73,22 +71,22 @@ public class BigramGenerator {
         LeafReader leafReader = reader.leaves().get(0).reader();
         Terms terms = leafReader.terms(field);
 
-        // The Terms object gives us some stats for this term within the segment
-        System.out.println("Number of docs with this term:" + terms.getDocCount());
+//
+//        // The Terms object gives us some stats for this term within the segment
+//        System.out.println("Number of docs with this term:" + terms.getDocCount());
 
         TermsEnum te = terms.iterator();
         BytesRef term;
         int i = 1;
         String output="";
         while ((term = te.next()) != null) {
-            System.out.println(term.utf8ToString() + " DF: " + te.docFreq() + " CF: " + te.totalTermFreq());
             if (term.utf8ToString().split(" ").length > 1) {
+                System.out.println(term.utf8ToString() + " DF: " + te.docFreq() + " CF: " + te.totalTermFreq());
                 output = output + i + " " + term.utf8ToString() + "\n";
                 i++;
             }
-
         }
-        Files.write(Paths.get("/Users/colin/Workspace/lucene4ir/data/ap_bigrams.qry"), output.getBytes());
+        Files.write(Paths.get(outputPath), output.getBytes());
 
     }
 
@@ -106,16 +104,17 @@ public class BigramGenerator {
             System.exit(1);
         }
 
-        ExampleStatsApp statsApp = new ExampleStatsApp();
+        BigramGenerator bigramGenerator = new BigramGenerator();
 
-        statsApp.readExampleStatsParamsFromFile(statsParamFile);
+        bigramGenerator.readBigramGeneratorParamsFromFile(statsParamFile);
 
-        statsApp.openReader();
-        statsApp.termsList("title");
+        bigramGenerator.openReader();
+        bigramGenerator.termsList("title");
     }
 }
 
 class BigramGeneratorParams {
     public String indexName;
+    public String outputPath;
 }
 

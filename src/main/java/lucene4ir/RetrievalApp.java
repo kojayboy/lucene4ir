@@ -216,7 +216,7 @@ public class RetrievalApp {
     public ScoreDoc[] runQuery(String qno, String queryTerms){
         ScoreDoc[] hits = null;
 
-        System.out.println("Query No.: " + qno + " " + queryTerms);
+        //System.out.println("Query No.: " + qno + " " + queryTerms);
         try {
             Query query = parser.parse(QueryParser.escape(queryTerms));
 
