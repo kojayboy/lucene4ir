@@ -139,7 +139,9 @@ public class RetrievalApp {
         if (p.runTag == null){
             p.runTag = p.model.toLowerCase();
         }
-
+        if (p.field == null) {
+            p.field = "content";
+        }
         if (p.resultFile == null){
             p.resultFile = p.runTag+"_results.res";
         }
@@ -148,9 +150,9 @@ public class RetrievalApp {
         System.out.println("Query File: " + p.queryFile);
         System.out.println("Result File: " + p.resultFile);
         System.out.println("Model: " + p.model);
+        System.out.println("Fields: " + p.field);
         System.out.println("Max Results: " + p.maxResults);
         System.out.println("b: " + p.b);
-
 
         if (p.tokenFilterFile != null){
             TokenAnalyzerMaker tam = new TokenAnalyzerMaker();
@@ -186,9 +188,6 @@ public class RetrievalApp {
                     String queryTerms = "";
                     for (int i=1; i<parts.length; i++)
                         queryTerms = queryTerms + " " + parts[i];
-                    /*
-                    Parse the query File here using the same tokenisers as indexing
-                     */
                     ScoreDoc[] scored = runQuery(qno, queryTerms);
 
                     int n = Math.min(p.maxResults, scored.length);
@@ -246,14 +245,13 @@ public class RetrievalApp {
             // create similarity function and parameter
             selectSimilarityFunction(sim);
             searcher.setSimilarity(simfn);
-            parser = new QueryParser("content", analyzer);
+            parser = new QueryParser(p.field, analyzer);
 
 
         } catch (Exception e){
             System.out.println(" caught a " + e.getClass() +
                     "\n with message: " + e.getMessage());
         }
-
     }
 
     public static void main(String []args) {
@@ -277,7 +275,6 @@ public class RetrievalApp {
 }
 
 
-
 class RetrievalParams {
     public String indexName;
     public String queryFile;
@@ -293,6 +290,7 @@ class RetrievalParams {
     public float delta;
     public String runTag;
     public String tokenFilterFile;
+    public String field;
 }
 
 

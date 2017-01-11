@@ -6,4 +6,5 @@
     <model>bm25</model>
     <resultFile>data/cacm/bm25_results.res</resultFile>
     <tokenFilterFile>params/index/example_03.xml</tokenFilterFile>
+    <field>title</field>
 </retrievalParams>
