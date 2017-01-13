@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <indexParams>
     <indexName>apIndex</indexName>
-    <fileList>/Users/colin/Workspace/collections/ap/ap.list</fileList>
+    <fileList>/Users/colin/Workspace/collections/ap/ap.singlelist</fileList>
     <indexType>trecnews</indexType>
-    <tokenFilterFile>params/index/example_03.xml</tokenFilterFile>
+    <tokenFilterFile>params/index/ap_token_filters.xml</tokenFilterFile>
 </indexParams>

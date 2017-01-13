@@ -5,6 +5,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.BytesRef;
 
 import javax.xml.bind.JAXB;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,9 +18,8 @@ import java.nio.file.Paths;
 
 public class BigramGenerator {
 
-    public String indexName;
+    public BigramGeneratorParams p;
     public IndexReader reader;
-    public String outputPath;
 
     public BigramGenerator() {
         System.out.println("BigramGenerator");
@@ -29,19 +29,21 @@ public class BigramGenerator {
 
     Assumes index has a docnum (i.e. trec doc id), title and content fields.
      */
-        indexName = "";
-        outputPath = "/Users/kojayboy/Workspace/lucene4ir/data/ap_bigrams2.qry";
-        reader = null;
-
     }
 
 
-    public void readBigramGeneratorParamsFromFile(String indexParamFile) {
+    public void readBigramGeneratorParamsFromFile(String paramFile) {
         try {
-            IndexParams p = JAXB.unmarshal(new File(indexParamFile), IndexParams.class);
-            indexName = p.indexName;
-            //add in outputPath read.
-
+            p = JAXB.unmarshal(new File(paramFile), BigramGeneratorParams.class);
+            if (p.indexName == null) {
+                 p.indexName = "apIndex";
+            }
+            if (p.outputName == null) {
+                p.outputName = "data/bigram.qry";
+            }
+            if (p.cutoff < 1) {
+                p.cutoff = 0;
+            }
         } catch (Exception e) {
             System.out.println(" caught a " + e.getClass() +
                     "\n with message: " + e.getMessage());
@@ -54,7 +56,7 @@ public class BigramGenerator {
 
     public void openReader() {
         try {
-            reader = DirectoryReader.open(FSDirectory.open(Paths.get(indexName)));
+            reader = DirectoryReader.open(FSDirectory.open(Paths.get(p.indexName)));
 
         } catch (IOException e) {
             System.out.println(" caught a " + e.getClass() +
@@ -80,13 +82,13 @@ public class BigramGenerator {
         int i = 1;
         String output="";
         while ((term = te.next()) != null) {
-            if (term.utf8ToString().split(" ").length > 1) {
+            if (term.utf8ToString().split(" ").length > 1 & te.totalTermFreq() > p.cutoff) {
                 System.out.println(term.utf8ToString() + " DF: " + te.docFreq() + " CF: " + te.totalTermFreq());
                 output = output + i + " " + term.utf8ToString() + "\n";
                 i++;
             }
         }
-        Files.write(Paths.get(outputPath), output.getBytes());
+        Files.write(Paths.get(p.outputName), output.getBytes());
 
     }
 
@@ -115,6 +117,7 @@ public class BigramGenerator {
 
 class BigramGeneratorParams {
     public String indexName;
-    public String outputPath;
+    public String outputName;
+    public int cutoff;
 }
 
