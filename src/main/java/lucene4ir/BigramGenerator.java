@@ -82,9 +82,9 @@ public class BigramGenerator {
         int i = 1;
         String output="";
         while ((term = te.next()) != null) {
-            if (term.utf8ToString().split(" ").length > 1 & te.totalTermFreq() > p.cutoff) {
+            if (term.utf8ToString().split(" ").length > 1 && te.totalTermFreq() > p.cutoff) {
                 System.out.println(term.utf8ToString() + " DF: " + te.docFreq() + " CF: " + te.totalTermFreq());
-                output = output + i + " " + term.utf8ToString() + "\n";
+                output = output + i + " " + term.utf8ToString() + " " + te.docFreq() + " " + te.totalTermFreq() + "\n";
                 i++;
             }
         }
@@ -111,7 +111,7 @@ public class BigramGenerator {
         bigramGenerator.readBigramGeneratorParamsFromFile(statsParamFile);
 
         bigramGenerator.openReader();
-        bigramGenerator.termsList("title");
+        bigramGenerator.termsList("content");
     }
 }
 

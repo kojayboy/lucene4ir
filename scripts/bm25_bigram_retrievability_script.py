@@ -1,0 +1,27 @@
+import sys
+
+collection=sys.argv[1]
+
+bm25_measure_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+pl2_measure_list = [0.1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100]
+jm_measure_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+lm_measure_list = [1, 10, 100, 500, 1000, 2000, 3000, 5000, 10000]
+dpi_measure_list = [0,1,2,3]
+log_measure_list = [0.1,0.5,1,1.25,1.5,1.75,2, 2.25, 2.5, 2.75, 3, 3.25, 3.5, 3.75, 4 ,5]
+
+for b in bm25_measure_list:
+    filename = '/Users/kojayboy/Workspace/lucene4ir/params/%s/bigram_files/BM25-%.2f.list' % (collection, b)
+    file = open(filename, 'w')
+    file.write('/Users/kojayboy/Workspace/lucene4ir/data/%s/6/ap.BM25-%.2f.res\n' % (collection, b))
+    file.close()
+
+    filename = '/Users/kojayboy/Workspace/lucene4ir/params/%s/bigram_files/BM25-%.2f.retrieval.params' % (collection, b)
+    file = open(filename, 'w')
+    file.write('[inputs] \n\
+results_file_list = /Users/kojayboy/Workspace/lucene4ir/params/%s/bigram_files/BM25-%.2f.list \n\
+docid_list = /Users/kojayboy/Workspace/lucene4ir/data/%s/docid \n\
+[outputs] \n\
+results_directory = /Users/kojayboy/Workspace/lucene4ir/data/%s/6/ \n\
+results_output = BM25-%.2f.ret\n\
+show_titles = False'% (collection, b, collection, collection, b))
+    file.close()

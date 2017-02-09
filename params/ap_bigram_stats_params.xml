@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<exampleStatsParams>
+<BigramGeneratorParams>
     <indexName>apBigramIndex</indexName>
     <outputName>data/ap_bigram.qry</outputName>
     <cutoff>1</cutoff>
-</exampleStatsParams>
+</BigramGeneratorParams>

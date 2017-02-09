@@ -222,6 +222,7 @@ public class RetrievalApp {
             try {
                 TopDocs results = searcher.search(query, 1000);
                 hits = results.scoreDocs;
+                //System.out.println(hits.length);
             }
             catch (IOException ioe){
                 System.out.println(" caught a " + ioe.getClass() +

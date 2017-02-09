@@ -6,13 +6,12 @@
     </tokenFilter>
     <tokenFilter>
         <name>stop</name>
-        <param></param>
     </tokenFilter>
     <tokenFilter>
         <name>patternreplace</name>
         <param>
             <key>pattern</key>
-            <value>[+\-._(),/%]?[0-9]+[+\-._(),/%]?[0-9]*[+\-._(),/%]?|^_+</value>
+            <value>([+\-._(),/%]?[0-9]+[+\-._(),/%]?[0-9]*[+\-._(),/%]?|^_+)</value>
         </param>
         <param>
             <key>replacement</key>
@@ -50,7 +49,7 @@
 
         <param>
             <key>fillerToken</key>
-            <value>""</value>
+            <value>___</value>
         </param>
         <param>
             <key>outputUnigrams</key>

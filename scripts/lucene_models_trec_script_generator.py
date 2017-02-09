@@ -20,7 +20,7 @@ if len(sys.argv) < 4:
     print "python lucene_model_trec_script_generator.py path_to_lucene query_file collection <model> <param_setting>"
     sys.exit(1)
 
-path_to_lucene=sys.argv[1]
+index_name=sys.argv[1]
 query_file=sys.argv[2]
 collection=sys.argv[3]
 model='BM25'
@@ -32,6 +32,7 @@ if len(sys.argv)==5:
     param = model_params[model]
 elif len(sys.argv)==6:
     model=sys.argv[4]
+    param = model_params[model]
     param_setting=float(sys.argv[5])
 
 if model not in models:
@@ -42,17 +43,18 @@ if model not in models:
     print "Available models are " + models_string
     sys.exit(1)
 
-print 'Writing param file to %s/params/%s.%s-%.2f.params' % (path_to_lucene,collection,model,param_setting)
+print 'Writing param file to params/%s.%s-%.2f.params' % (collection,model,param_setting)
 
-filename = '%s/params/%s.%s-%.2f.params' % (path_to_lucene,collection,model,param_setting)
+filename = '../params/%s.%s-%.2f.params' % (collection,model,param_setting)
 file = open(filename, 'w')
 file.write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?> \n\
 <retrievalParams> \n\
-<indexName>%s/index</indexName> \n\
-<queryFile>%s/data/%s/%s</queryFile> \n\
-<maxResults>1000</maxResults> \n\
+<indexName>%s</indexName> \n\
+<queryFile>data/%s/%s</queryFile> \n\
+<maxResults>100</maxResults> \n\
 <model>%s</model> \n\
 <%s>%.2f</%s> \n\
-<resultFile>%s/data/%s/%s.%s-%.2f.res</resultFile> \n\
-</retrievalParams>'% (path_to_lucene, path_to_lucene, collection, query_file, model, param, param_setting, param,path_to_lucene, collection, collection, model, param_setting))
+<resultFile>data/%s/%s.%s-%.2f.res</resultFile> \n\
+<tokenFilterFile>params/index/ap_token_filters.xml</tokenFilterFile> \n\
+</retrievalParams>'% (index_name, collection, query_file, model, param, param_setting, param, collection, collection, model, param_setting))
 file.close()
