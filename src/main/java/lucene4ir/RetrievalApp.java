@@ -38,7 +38,7 @@ public class RetrievalApp {
     private CollectionModel colModel;
 
     private enum SimModel {
-        DEF, BM25, BM25L, LMD, LMJ, PL2, TFIDF,
+        DEF, BM25, BM25L, BM25F, LMD, LMJ, PL2, TFIDF,
 	OKAPIBM25, SMARTBNNBNN
     }
 
@@ -94,7 +94,10 @@ public class RetrievalApp {
                 Normalization nn = new NormalizationH2(p.c);
                 simfn = new DFRSimilarity(bm, ae, nn);
                 break;
-
+            case BM25F:
+                System.out.println("BM25F Similarity Function");
+                simfn = new BM25FSimilarity(p.k, p.b);
+                break;
             default:
                 System.out.println("Default Similarity Function");
                 simfn = new BM25Similarity();
