@@ -18,6 +18,7 @@ import lucene4ir.similarity.SMARTBNNBNNSimilarity;
 import lucene4ir.similarity.OKAPIBM25Similarity;
 import lucene4ir.similarity.BM25LSimilarity;
 import lucene4ir.similarity.BM25Similarity;
+import lucene4ir.similarity.BM25FSimilarity;
 import lucene4ir.utils.TokenAnalyzerMaker;
 
 import javax.xml.bind.JAXB;
@@ -129,7 +130,7 @@ public class RetrievalApp {
         setSim(p.model);
 
         if (p.maxResults==0.0) {p.maxResults=1000;}
-        if (p.b == 0.0){ p.b = 0.75f;}
+        if (p.b < 0.0){ p.b = 0.75f;}
         if (p.beta == 0.0){p.beta = 500f;}
         if (p.k ==0.0){ p.k = 1.2f;}
         if (p.delta==0.0){p.delta = 1.0f;}
