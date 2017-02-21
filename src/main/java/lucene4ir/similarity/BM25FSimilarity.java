@@ -63,6 +63,7 @@ public class BM25FSimilarity extends Similarity {
         }
         this.k1 = k1;
         this.b  = b;
+        System.out.println(this.toString());
     }
 
     /** BM25 with these default values:
@@ -307,6 +308,7 @@ public class BM25FSimilarity extends Similarity {
         List<Explanation> subs = new ArrayList<>();
         subs.add(freq);
         subs.add(Explanation.match(k1, "parameter k1"));
+        System.out.println(k1 + " " + b);
         if (norms == null) {
             subs.add(Explanation.match(0, "parameter b (norms omitted for field)"));
             return Explanation.match(

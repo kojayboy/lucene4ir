@@ -4,16 +4,14 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.similarities.*;
 import org.apache.lucene.search.similarities.LMSimilarity.CollectionModel;
 import org.apache.lucene.store.FSDirectory;
-
+import org.apache.lucene.search.BlendedTermQuery;
 import lucene4ir.similarity.SMARTBNNBNNSimilarity;
 import lucene4ir.similarity.OKAPIBM25Similarity;
 import lucene4ir.similarity.BM25LSimilarity;
@@ -97,7 +95,7 @@ public class RetrievalApp {
                 break;
             case BM25F:
                 System.out.println("BM25F Similarity Function");
-                simfn = new BM25FSimilarity(p.k, p.b);
+                simfn = new BM25Similarity(p.k, p.b);
                 break;
             default:
                 System.out.println("Default Similarity Function");
@@ -192,6 +190,12 @@ public class RetrievalApp {
                     String queryTerms = "";
                     for (int i=1; i<parts.length; i++)
                         queryTerms = queryTerms + " " + parts[i];
+//                    System.out.println("Checking if Fielded");
+                    if (sim.equals(SimModel.valueOf("BM25F"))){
+//                        System.out.println("Fielded");
+                        String[] fields = new String[100];
+                        ScoreDoc[] scored = runQuery(qno, queryTerms,fields);
+                    }
                     ScoreDoc[] scored = runQuery(qno, queryTerms);
 
                     int n = Math.min(p.maxResults, scored.length);
@@ -222,7 +226,6 @@ public class RetrievalApp {
         //System.out.println("Query No.: " + qno + " " + queryTerms);
         try {
             Query query = parser.parse(QueryParser.escape(queryTerms));
-
             try {
                 TopDocs results = searcher.search(query, 1000);
                 hits = results.scoreDocs;
@@ -236,6 +239,38 @@ public class RetrievalApp {
 
         } catch (ParseException pe){
             System.out.println("Can't parse query");
+        }
+        return hits;
+    }
+
+    public ScoreDoc[] runQuery(String qno, String queryTerms, String[] fields){
+        ScoreDoc[] hits = null;
+
+        System.out.println("Blending Query No.: " + qno);
+        try {
+            //String[] fList=fields.split(",");
+            //for(int f = 0; f < fList.length; f++){
+                //Query query = parser.parse(QueryParser.escape(queryTerms));
+
+            BlendedTermQuery query = new BlendedTermQuery.Builder()
+                        .add(new Term("title", queryTerms), 1.0f)
+                        .add(new Term("content", queryTerms), 1.0f)
+
+                        .setRewriteMethod(BlendedTermQuery.BOOLEAN_REWRITE)
+                        .build();
+            try {
+                TopDocs results = searcher.search(query, 1000);
+                hits = results.scoreDocs;
+                //System.out.println(hits.length);
+            }
+            catch (IOException ioe){
+                System.out.println(" caught a " + ioe.getClass() +
+                        "\n with message: " + ioe.getMessage());
+            }
+
+
+        } catch (Exception e){
+            System.out.println("Can't parse query... probably");
         }
         return hits;
     }
