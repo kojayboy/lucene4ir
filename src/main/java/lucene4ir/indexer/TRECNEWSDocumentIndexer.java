@@ -42,6 +42,8 @@ public class TRECNEWSDocumentIndexer extends DocumentIndexer {
 
                     if (line.startsWith("</DOC>")){
 
+
+
                         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
                         DocumentBuilder builder =  builderFactory.newDocumentBuilder();
                         org.w3c.dom.Document xmlDocument = builder.parse(new InputSource(new StringReader(text.toString())));
@@ -66,6 +68,9 @@ public class TRECNEWSDocumentIndexer extends DocumentIndexer {
                         String author = xPath.compile(expression).evaluate(xmlDocument).trim();
                         Field authorField = new TextField("author", author, Field.Store.YES);
                         doc.add(authorField);
+
+                        Field allField = new TextField("all", (title + " " + content), Field.Store.YES);
+                        doc.add(allField);
 
                         addDocumentToIndex(doc);
 

@@ -20,8 +20,11 @@ import java.util.ListIterator;
 public class TRECTipsterDocumentIndexer extends DocumentIndexer {
 
     private static String [] contentTags = {
-            "TEXT", "HEADLINE", "TITLE", "HL", "HEAD",
-            "TTL", "DD>", "DATE", "LP", "LEADPARA"
+            "TEXT", "DD>", "DATE", "LP", "LEADPARA"
+    };
+    private static String [] titleTags = {
+            "HEAD", "HEADLINE", "TITLE", "HL",
+            "TTL"
     };
 
     public TRECTipsterDocumentIndexer(String indexPath, String tokenFilterFile){
@@ -60,6 +63,20 @@ public class TRECTipsterDocumentIndexer extends DocumentIndexer {
                             doc.add(docnumField);
                         }
 
+                        StringBuilder title = new StringBuilder();
+
+                        for (String tag : titleTags) {
+                            Elements contentElements = jsoupDoc.getElementsByTag(tag);
+                            if (contentElements!=null) {
+                                ListIterator<Element> elIterator = contentElements.listIterator();
+                                while (elIterator.hasNext())
+                                    title.append(" ").append(elIterator.next().text());
+                            }
+                        }
+                        Field titleField = new TextField("title", title.toString().trim(), Field.Store.YES);
+                        System.out.println(titleField.name() + ":\n" + titleField.stringValue());
+                        doc.add(titleField);
+
                         StringBuilder content = new StringBuilder();
 
                         for (String tag : contentTags) {
@@ -70,7 +87,12 @@ public class TRECTipsterDocumentIndexer extends DocumentIndexer {
                                 content.append(" ").append(elIterator.next().text());
                             }
                         }
-                        Field textField = new TextField("content", content.toString().trim(), Field.Store.YES);
+                        Field contentField = new TextField("content", content.toString().trim(), Field.Store.YES);
+                        System.out.println(contentField.name() + ":\n" + contentField.stringValue());
+                        doc.add(contentField);
+
+                        Field textField = new TextField("all", (title.toString().trim() + " " + content.toString().trim()), Field.Store.YES);
+                        System.out.println(textField.name() + ":\n" + textField.stringValue());
                         doc.add(textField);
 
                         addDocumentToIndex(doc);
