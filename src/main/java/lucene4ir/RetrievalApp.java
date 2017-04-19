@@ -3,6 +3,7 @@ package lucene4ir;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.FieldInvertState;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -16,8 +17,10 @@ import lucene4ir.similarity.SMARTBNNBNNSimilarity;
 import lucene4ir.similarity.OKAPIBM25Similarity;
 import lucene4ir.similarity.BM25LSimilarity;
 import lucene4ir.similarity.BM25Similarity;
+import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import lucene4ir.similarity.BM25FSimilarity;
 import lucene4ir.utils.TokenAnalyzerMaker;
+import org.apache.lucene.util.BytesRef;
 
 import javax.xml.bind.JAXB;
 import java.io.*;
@@ -69,6 +72,10 @@ public class RetrievalApp {
             case BM25:
                 System.out.println("BM25 Similarity Function");
                 simfn = new BM25Similarity(p.k, p.b);
+                break;
+            case TFIDF:
+                System.out.println("TF.IDF Similarity Function");
+                simfn = new ClassicSimilarity();
                 break;
 //            case BM25L:
 //                System.out.println("BM25L Similarity Function");
@@ -253,7 +260,7 @@ public class RetrievalApp {
                 //Query query = parser.parse(QueryParser.escape(queryTerms));
 
             BlendedTermQuery query = new BlendedTermQuery.Builder()
-                        .add(new Term("title", queryTerms), 1.0f)
+                        .add(new Term("title", queryTerms), 0.0f)
                         .add(new Term("content", queryTerms), 1.0f)
 
                         .setRewriteMethod(BlendedTermQuery.BOOLEAN_REWRITE)
