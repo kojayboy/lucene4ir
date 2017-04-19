@@ -44,6 +44,9 @@ public class BigramGenerator {
             if (p.cutoff < 1) {
                 p.cutoff = 0;
             }
+            if (p.field == null) {
+                p.field = "all";
+            }
         } catch (Exception e) {
             System.out.println(" caught a " + e.getClass() +
                     "\n with message: " + e.getMessage());
@@ -65,13 +68,13 @@ public class BigramGenerator {
 
     }
 
-    public void termsList(String field) throws IOException {
+    public void termsList() throws IOException {
 
         // again, we'll just look at the first segment.  Terms dictionaries
         // for different segments may well be different, as they depend on
         // the individual documents that have been added.
         LeafReader leafReader = reader.leaves().get(0).reader();
-        Terms terms = leafReader.terms(field);
+        Terms terms = leafReader.terms(p.field);
 
 //
 //        // The Terms object gives us some stats for this term within the segment
@@ -83,7 +86,7 @@ public class BigramGenerator {
         String output="";
         while ((term = te.next()) != null) {
             if (term.utf8ToString().split(" ").length > 1 && te.totalTermFreq() > p.cutoff) {
-                System.out.println(term.utf8ToString() + " DF: " + te.docFreq() + " CF: " + te.totalTermFreq());
+                //System.out.println(term.utf8ToString() + " DF: " + te.docFreq() + " CF: " + te.totalTermFreq());
                 output = output + i + " " + term.utf8ToString() + " " + te.docFreq() + " " + te.totalTermFreq() + "\n";
                 i++;
             }
@@ -111,7 +114,7 @@ public class BigramGenerator {
         bigramGenerator.readBigramGeneratorParamsFromFile(statsParamFile);
 
         bigramGenerator.openReader();
-        bigramGenerator.termsList("content");
+        bigramGenerator.termsList();
     }
 }
 
@@ -119,5 +122,5 @@ class BigramGeneratorParams {
     public String indexName;
     public String outputName;
     public int cutoff;
+    public String field;
 }
-
