@@ -55,6 +55,8 @@ public class TRECAquaintDocumentIndexer extends DocumentIndexer {
         doc.add(sourceField);
         Field pubdateField = new StringField("pubdate", pubdate, Field.Store.YES);
         doc.add(pubdateField);
+        Field allField = new StringField("all", (title + " " + content), Field.Store.YES);
+        doc.add(allField);
         return doc;
     }
 
