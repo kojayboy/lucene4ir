@@ -135,6 +135,7 @@ public class RetrievalApp {
         if (p.lam==0.0){p.lam = 0.5f;}
         if (p.mu==0.0){p.mu = 500f;}
         if (p.c==0.0){p.c=10.0f;}
+
         if (p.model == null){
             p.model = "def";
         }
@@ -147,12 +148,16 @@ public class RetrievalApp {
         if (p.resultFile == null){
             p.resultFile = p.runTag+"_results.res";
         }
+        if (p.boosts == null){
+            p.boosts = "1.0";
+        }
 
         System.out.println("Path to index: " + p.indexName);
         System.out.println("Query File: " + p.queryFile);
         System.out.println("Result File: " + p.resultFile);
         System.out.println("Model: " + p.model);
         System.out.println("Fields: " + p.field);
+        System.out.println("Boosts: " + p.boosts);
         System.out.println("Max Results: " + p.maxResults);
         System.out.println("b: " + p.b);
 
@@ -184,19 +189,20 @@ public class RetrievalApp {
             try {
                 String line = br.readLine();
                 while (line != null){
-
                     String[] parts = line.split(" ");
                     String qno = parts[0];
                     String queryTerms = "";
-                    for (int i=1; i<parts.length; i++)
-                        queryTerms = queryTerms + " " + parts[i];
-//                    System.out.println("Checking if Fielded");
-                    if (sim.equals(SimModel.valueOf("BM25F"))){
-//                        System.out.println("Fielded");
-                        String[] fields = new String[100];
-                        ScoreDoc[] scored = runQuery(qno, queryTerms,fields);
+                    for (int i=1; i<parts.length; i++) {
+                        queryTerms = queryTerms + parts[i] + " ";
                     }
-                    ScoreDoc[] scored = runQuery(qno, queryTerms);
+
+                    ScoreDoc[] scored=null;
+                    if (sim.equals(SimModel.valueOf("BM25F"))){
+                        scored = runQuery(qno, queryTerms,p.field,p.boosts);
+                    }
+                    else {
+                        scored = runQuery(qno, queryTerms);
+                    }
 
                     int n = Math.min(p.maxResults, scored.length);
 
@@ -225,11 +231,11 @@ public class RetrievalApp {
 
         //System.out.println("Query No.: " + qno + " " + queryTerms);
         try {
+            parser = new QueryParser(p.field, analyzer);
             Query query = parser.parse(QueryParser.escape(queryTerms));
             try {
                 TopDocs results = searcher.search(query, 1000);
                 hits = results.scoreDocs;
-                //System.out.println(hits.length);
             }
             catch (IOException ioe){
                 System.out.println(" caught a " + ioe.getClass() +
@@ -243,25 +249,27 @@ public class RetrievalApp {
         return hits;
     }
 
-    public ScoreDoc[] runQuery(String qno, String queryTerms, String[] fields){
+    public ScoreDoc[] runQuery(String qno, String queryTerms, String fields, String boosts){
         ScoreDoc[] hits = null;
 
-        System.out.println("Blending Query No.: " + qno);
+//        System.out.println("Blending Query No.: " + qno);
         try {
-            //String[] fList=fields.split(",");
-            //for(int f = 0; f < fList.length; f++){
-                //Query query = parser.parse(QueryParser.escape(queryTerms));
-
+            String[] flist = fields.split(",");
+            String[] qt = queryTerms.split(" ");
+            String[] bs = boosts.split(",");
+            float b1 = Float.parseFloat(bs[0]);
+            float b2 = Float.parseFloat(bs[1]);
             BlendedTermQuery query = new BlendedTermQuery.Builder()
-                        .add(new Term("title", queryTerms), 1.0f)
-                        .add(new Term("content", queryTerms), 1.0f)
+                        .add(new Term(flist[0], qt[0]), b1)
+                        .add(new Term(flist[0], qt[1]), b1)
+                        .add(new Term(flist[1], qt[0]), b2)
+                        .add(new Term(flist[1], qt[1]), b2)
 
                         .setRewriteMethod(BlendedTermQuery.BOOLEAN_REWRITE)
                         .build();
             try {
                 TopDocs results = searcher.search(query, 1000);
                 hits = results.scoreDocs;
-                //System.out.println(hits.length);
             }
             catch (IOException ioe){
                 System.out.println(" caught a " + ioe.getClass() +
@@ -285,7 +293,7 @@ public class RetrievalApp {
             // create similarity function and parameter
             selectSimilarityFunction(sim);
             searcher.setSimilarity(simfn);
-            parser = new QueryParser(p.field, analyzer);
+            //parser = new QueryParser(p.field, analyzer);
 
 
         } catch (Exception e){
@@ -331,6 +339,7 @@ class RetrievalParams {
     public String runTag;
     public String tokenFilterFile;
     public String field;
+    public String boosts;
 }
 
 

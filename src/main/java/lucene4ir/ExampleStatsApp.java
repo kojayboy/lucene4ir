@@ -1,9 +1,9 @@
 package lucene4ir;
 
 import javax.xml.bind.JAXB;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
+import java.nio.file.Files;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -197,6 +197,30 @@ public class ExampleStatsApp {
             }
     }
 
+    public void saveDocid()  throws IOException {
+        int n = reader.maxDoc();
+
+        File fout = new File("docid");
+        FileOutputStream fos = new FileOutputStream(fout);
+
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+        int x = 1;
+        for (int i = 0; i < n; i++) {
+            Document doc = reader.document(i);
+
+            // the doc.get pulls out the values stored - ONLY if you store the fields
+            String docnum = doc.get("docnum");
+            bw.write(docnum);
+            bw.newLine();
+            System.out.println(docnum);
+            //System.out.println(doc.get("content"));
+            x++;
+            iterateThroughDocTermVector(i);
+
+        }
+        System.out.println(x);
+    }
+
 
     public void termStats(String termText)  throws IOException{
         /*
@@ -298,22 +322,23 @@ public class ExampleStatsApp {
         statsApp.readExampleStatsParamsFromFile(statsParamFile);
 
         statsApp.openReader();
-        statsApp.docStats();
-        statsApp.iterateThroughDocList();
-        statsApp.termStats("program");
-        statsApp.termStats("programs");
-        statsApp.termStats("system");
-        statsApp.termStats("systems");
-        statsApp.termStats("Evacuation");
-
-
-        statsApp.termPostingsList("title","system");
-        statsApp.fieldsList();
-        statsApp.termsList("title");
-
-        statsApp.iterateThroughDocTermVector(1);
-        statsApp.docLength(1);
-        statsApp.numSegments();
+        statsApp.saveDocid();
+//        statsApp.docStats();
+//        statsApp.iterateThroughDocList();
+//        statsApp.termStats("program");
+//        statsApp.termStats("programs");
+//        statsApp.termStats("system");
+//        statsApp.termStats("systems");
+//        statsApp.termStats("Evacuation");
+//
+//
+//        statsApp.termPostingsList("title","system");
+//        statsApp.fieldsList();
+//        statsApp.termsList("title");
+//
+//        statsApp.iterateThroughDocTermVector(1);
+//        statsApp.docLength(1);
+//        statsApp.numSegments();
 
 
 
