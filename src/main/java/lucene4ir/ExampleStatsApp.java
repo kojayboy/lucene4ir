@@ -122,7 +122,7 @@ public class ExampleStatsApp {
 
     }
 
-    public void docLength(int docid) throws IOException{
+    public long docLength(int docid) throws IOException{
         /*
         The direct index must be stored for this to work... how do we store it, though?
          */
@@ -140,8 +140,44 @@ public class ExampleStatsApp {
             tot = tot + t.size();
             System.out.println("content: " + t.size());
         }
-        System.out.println("Doc Length: " + tot);
 
+        t = reader.getTermVector(docid, "all");
+        if (t != null){
+            return t.size();
+        }
+        else
+            return 0;
+
+    }
+
+    public void saveDocLen(String filename)  throws IOException {
+        int n = reader.maxDoc();
+
+        File fout = new File(filename);
+        FileOutputStream fos = new FileOutputStream(fout);
+
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+        int x = 1;
+        for (int i = 0; i < n; i++) {
+            Document doc = reader.document(i);
+
+            // the doc.get pulls out the values stored - ONLY if you store the fields
+            String docnum = doc.get("docnum");
+            String all = doc.get("all");
+
+            long len = 0;
+            if (all != null){
+                len = all.length();
+            }
+
+            String line = i + " " + docnum + " " + len;
+            bw.write(line);
+            bw.newLine();
+            x++;
+            iterateThroughDocTermVector(i);
+
+        }
+        System.out.println(x);
     }
 
 
@@ -197,10 +233,10 @@ public class ExampleStatsApp {
             }
     }
 
-    public void saveDocid()  throws IOException {
+    public void saveDocid(String filename)  throws IOException {
         int n = reader.maxDoc();
 
-        File fout = new File("docid");
+        File fout = new File(filename);
         FileOutputStream fos = new FileOutputStream(fout);
 
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
@@ -321,8 +357,9 @@ public class ExampleStatsApp {
 
         statsApp.readExampleStatsParamsFromFile(statsParamFile);
 
-        statsApp.openReader();
-        statsApp.saveDocid();
+//        statsApp.openReader();
+//        statsApp.saveDocLen("doclen");
+//        statsApp.saveDocid("docid");
 //        statsApp.docStats();
 //        statsApp.iterateThroughDocList();
 //        statsApp.termStats("program");
@@ -334,13 +371,11 @@ public class ExampleStatsApp {
 //
 //        statsApp.termPostingsList("title","system");
 //        statsApp.fieldsList();
-//        statsApp.termsList("title");
+//        statsApp.termsList("all");
 //
 //        statsApp.iterateThroughDocTermVector(1);
 //        statsApp.docLength(1);
 //        statsApp.numSegments();
-
-
 
     }
 }

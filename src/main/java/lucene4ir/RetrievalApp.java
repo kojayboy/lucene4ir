@@ -252,14 +252,17 @@ public class RetrievalApp {
             //for(int f = 0; f < fList.length; f++){
                 //Query query = parser.parse(QueryParser.escape(queryTerms));
 
-            BlendedTermQuery query = new BlendedTermQuery.Builder()
-                    .add(new Term(flist[0], qt[0]), b1)
-                    .add(new Term(flist[0], qt[1]), b1)
-                    .add(new Term(flist[1], qt[0]), b2)
-                    .add(new Term(flist[1], qt[1]), b2)
+            BlendedTermQuery.Builder queryBuilder = new BlendedTermQuery.Builder();
+            for(int f = 0; f < fields.length; f++) {
+                queryBuilder.add(new Term(fields[f], queryTerms), 1.0f);
+            }
+            queryBuilder.setRewriteMethod(BlendedTermQuery.BOOLEAN_REWRITE);
+            BlendedTermQuery query = queryBuilder.build();
 
-                        .setRewriteMethod(BlendedTermQuery.BOOLEAN_REWRITE)
-                        .build();
+//
+//
+//                        .setRewriteMethod(BlendedTermQuery.BOOLEAN_REWRITE)
+//                        .build();
             try {
                 TopDocs results = searcher.search(query, 1000);
                 hits = results.scoreDocs;
@@ -332,7 +335,12 @@ class RetrievalParams {
     public float delta;
     public String runTag;
     public String tokenFilterFile;
-    public String field;
+    public FieldParams[] fields;
+}
+
+class FieldParams {
+    public String fieldName;
+    public float fieldBoost;
 }
 
 

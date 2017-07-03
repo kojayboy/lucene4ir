@@ -33,20 +33,25 @@ public class BigramGenerator {
 
 
     public void readBigramGeneratorParamsFromFile(String paramFile) {
+        System.out.println("Reading Param File");
         try {
             p = JAXB.unmarshal(new File(paramFile), BigramGeneratorParams.class);
             if (p.indexName == null) {
                  p.indexName = "apIndex";
             }
+            System.out.println("Index: " + p.indexName);
             if (p.outputName == null) {
                 p.outputName = "data/bigram.qry";
             }
+            System.out.println("Output File: " + p.outputName);
             if (p.cutoff < 1) {
                 p.cutoff = 0;
             }
+            System.out.println("Cutoff: " + p.cutoff);
             if (p.field == null) {
                 p.field = "all";
             }
+            System.out.println("Field: " + p.field);
         } catch (Exception e) {
             System.out.println(" caught a " + e.getClass() +
                     "\n with message: " + e.getMessage());
@@ -79,14 +84,15 @@ public class BigramGenerator {
 //
 //        // The Terms object gives us some stats for this term within the segment
 //        System.out.println("Number of docs with this term:" + terms.getDocCount());
-
+        System.out.println("Extracting Terms... \n Total terms: " + terms.size());
         TermsEnum te = terms.iterator();
         BytesRef term;
         int i = 1;
         String output="";
         while ((term = te.next()) != null) {
+            System.out.println(term.utf8ToString()+ "\n \n \n \n");
             if (term.utf8ToString().split(" ").length > 1 && te.totalTermFreq() > p.cutoff) {
-                //System.out.println(term.utf8ToString() + " DF: " + te.docFreq() + " CF: " + te.totalTermFreq());
+                System.out.println(term.utf8ToString() + " DF: " + te.docFreq() + " CF: " + te.totalTermFreq());
                 output = output + i + " " + term.utf8ToString() + " " + te.docFreq() + " " + te.totalTermFreq() + "\n";
                 i++;
             }
