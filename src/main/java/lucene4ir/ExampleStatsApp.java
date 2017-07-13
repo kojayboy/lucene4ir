@@ -30,7 +30,7 @@ public class ExampleStatsApp {
         /*
         Shows a number of routines to access various term, document and collection statistics
 
-        Assumes index has a docnum (i.e. trec doc id), title and content fields.
+        Assumes index has a docno (i.e. trec doc id), title and content fields.
          */
         indexName = "";
         reader = null;
@@ -162,7 +162,7 @@ public class ExampleStatsApp {
             Document doc = reader.document(i);
 
             // the doc.get pulls out the values stored - ONLY if you store the fields
-            String docnum = doc.get("docnum");
+            String docno = doc.get("docno");
             String all = doc.get("all");
 
             long len = 0;
@@ -170,7 +170,7 @@ public class ExampleStatsApp {
                 len = all.length();
             }
 
-            String line = i + " " + docnum + " " + len;
+            String line = i + " " + docno + " " + len;
             bw.write(line);
             bw.newLine();
             x++;
@@ -223,10 +223,10 @@ public class ExampleStatsApp {
                 Document doc = reader.document(i);
 
                 // the doc.get pulls out the values stored - ONLY if you store the fields
-                String docnum = doc.get("docno");
+                String docno = doc.get("docno");
                 String title = doc.get("title");
                 String content = doc.get("all");
-                System.out.println("docno and title: " + docnum + " " + title);
+                System.out.println("docno and title: " + docno + " " + title);
                 System.out.println(content);
                 //System.out.println(doc.get("content"));
 
@@ -247,10 +247,10 @@ public class ExampleStatsApp {
             Document doc = reader.document(i);
 
             // the doc.get pulls out the values stored - ONLY if you store the fields
-            String docnum = doc.get("docnum");
-            bw.write(docnum);
+            String docno = doc.get("docno");
+            bw.write(docno);
             bw.newLine();
-            System.out.println(docnum);
+            System.out.println(docno);
             //System.out.println(doc.get("content"));
             x++;
             iterateThroughDocTermVector(i);
