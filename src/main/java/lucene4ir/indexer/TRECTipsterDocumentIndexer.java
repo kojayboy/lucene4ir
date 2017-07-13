@@ -1,9 +1,7 @@
 package lucene4ir.indexer;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
+import org.apache.lucene.index.IndexableField;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -74,7 +72,6 @@ public class TRECTipsterDocumentIndexer extends DocumentIndexer {
                             }
                         }
                         Field titleField = new TextField("title", title.toString().trim(), Field.Store.YES);
-//                        System.out.println(titleField.name() + ":\n" + titleField.stringValue());
                         doc.add(titleField);
 
                         StringBuilder content = new StringBuilder();
@@ -88,11 +85,9 @@ public class TRECTipsterDocumentIndexer extends DocumentIndexer {
                             }
                         }
                         Field contentField = new TextField("content", content.toString().trim(), Field.Store.YES);
-//                        System.out.println(contentField.name() + ":\n" + contentField.stringValue());
                         doc.add(contentField);
 
                         Field textField = new TextField("all", (title.toString().trim() + " " + content.toString().trim()), Field.Store.YES);
-//                        System.out.println(textField.name() + ":\n" + textField.stringValue());
                         doc.add(textField);
 
                         addDocumentToIndex(doc);
