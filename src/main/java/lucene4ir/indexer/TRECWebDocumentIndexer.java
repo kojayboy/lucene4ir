@@ -9,9 +9,9 @@ import org.jsoup.nodes.BooleanAttribute;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ListIterator;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Indexer for TIPSTER test collections relying on JSOUP.
@@ -38,7 +38,16 @@ public class TRECWebDocumentIndexer extends DocumentIndexer {
         Document doc = new Document();
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(filename));
+            BufferedReader br;
+            if(filename.endsWith(".gz")) {
+                InputStream fileStream = new FileInputStream(filename);
+                InputStream gzipStream = new GZIPInputStream(fileStream);
+                Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
+                br = new BufferedReader(decoder);
+            }
+            else
+                br = new BufferedReader(new FileReader(filename));
+
             try {
                 line = br.readLine();
                 while (line != null){
