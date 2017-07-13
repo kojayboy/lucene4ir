@@ -217,15 +217,17 @@ public class ExampleStatsApp {
     public void iterateThroughDocList()  throws IOException {
             int n = reader.maxDoc();
             if (n>10) {
-                n = 10;
+                n = 1;
             }
             for (int i = 0; i < n; i++) {
                 Document doc = reader.document(i);
 
                 // the doc.get pulls out the values stored - ONLY if you store the fields
-                String docnum = doc.get("docnum");
+                String docnum = doc.get("docno");
                 String title = doc.get("title");
-                System.out.println("docnum and title: " + docnum + " " + title);
+                String content = doc.get("all");
+                System.out.println("docno and title: " + docnum + " " + title);
+                System.out.println(content);
                 //System.out.println(doc.get("content"));
 
                 iterateThroughDocTermVector(i);
@@ -354,23 +356,23 @@ public class ExampleStatsApp {
         }
 
         ExampleStatsApp statsApp = new ExampleStatsApp();
-
         statsApp.readExampleStatsParamsFromFile(statsParamFile);
+        System.out.println(statsApp.indexName);
 
-//        statsApp.openReader();
-//        statsApp.saveDocLen("doclen");
-//        statsApp.saveDocid("docid");
-//        statsApp.docStats();
-//        statsApp.iterateThroughDocList();
+        statsApp.openReader();
+        statsApp.docStats();
+        statsApp.iterateThroughDocList();
 //        statsApp.termStats("program");
 //        statsApp.termStats("programs");
 //        statsApp.termStats("system");
 //        statsApp.termStats("systems");
 //        statsApp.termStats("Evacuation");
+//        statsApp.saveDocLen("doclen");
+//        statsApp.saveDocid("docid");
 //
 //
 //        statsApp.termPostingsList("title","system");
-//        statsApp.fieldsList();
+        statsApp.fieldsList();
 //        statsApp.termsList("all");
 //
 //        statsApp.iterateThroughDocTermVector(1);
