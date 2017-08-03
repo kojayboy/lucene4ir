@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<retrievalParams>
+    <indexName>apIndex</indexName>
+    <queryFile>data/ap/51-200.topics.qry</queryFile>
+    <maxResults>1000</maxResults>
+    <model>bm25</model>
+    <b>0.75</b>
+    <resultFile>data/ap/BM25F.res</resultFile>
+    <tokenFilterFile>params/index/ap_token_filters.xml</tokenFilterFile>
+    <fieldsFile>params/ap/fielded_params.xml</fieldsFile>
+</retrievalParams>
